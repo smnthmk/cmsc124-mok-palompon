@@ -1,1 +1,5 @@
-{}
+{
+  "ext": ".mp",
+  "mode": "sidecar",
+  "run_entrypoint": "./run"
+}
