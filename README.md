@@ -7,8 +7,7 @@
 
 ## Overview
 
-[One paragraph: what the language is for, who would use it, what writing it
-feels like.]
+Inspired by ASCII typography and directional notation, this general-purpose language offers a visually intuitive approach to programming by using symbols such as arrows and carets among others, to organize code. It also borrows familiar conventions from languages such as Python and Kotlin. Think if code and a flowchart had a baby that was 80% code. Designed for visual-explicit learners.
 
 ## Host language and build
 
@@ -23,17 +22,17 @@ feels like.]
 | Command | What it does |
 |---|---|
 | `./run <file>` | [Executes a program. Available from Lab 4.] |
-| `./run --tokenize <file>` | [Prints the token stream.] |
+| `./run --lex <file>` | [Prints the token stream.] |
 | `./run --parse <file>` | [Prints the parsed tree.] |
 | `./run --eval <file>` | [Evaluates each expression and prints its value.] |
 | `./run` | [Starts the REPL.] |
 
 
-Exit codes: 0 [when], 65 [when], 70 [when].
+Exit codes: 0 when successful execution, 65 when syntax error, 70 when runtime error.
 
 ## File extension
 
-`[.ext]` [Must match the `ext` field in every tests/lab*/manifest.json.]
+`[.mp]` 
 
 ## Lexical structure
 
@@ -42,7 +41,13 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Keyword | Purpose |
 |---|---|
-| [word] | [what it does] |
+| var | declare a variable |
+| funct | declare a function |
+| if | conditional statement |
+| else | conditional statement |
+| while | executes loop while the condition is true |
+| and | logical operator (true if all statements true) |
+| or | logical operator (true if at least one statement true)|
 
 
 ### Operators
@@ -50,7 +55,25 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Operator | Category | Operands | Associativity | Precedence |
 |---|---|---|---|---|
-| [op] | [arithmetic, comparison, logical, assignment, other] | [unary or binary] | [left, right, none] | [1 = loosest] |
+| <- | assignment | binary | right | 1 |
+| +< | arithmetic, assignment | binary | right | 1 |
+| -< | arithmetic, assignment | binary | right | 1 |
+| *< | arithmetic, assignment | binary | right | 1 |
+| /< | arithmetic, assignment | binary | right | 1 |
+| and | logical | binary | left | 2 |
+| or | logical | binary | left | 2 |
+| == | equality | binary | left | 3 |
+| != | equality | binary | left | 3 |
+| < | relational | binary | left | 3 |
+| > | relational | binary | left | 3 |
+| <= | relational | binary | left | 3 |
+| >= | relational | binary | left | 3 |
+| -> | function output | binary | left | 4 |
+| + | arithmetic | binary | left | 5 |
+| - | arithmetic | binary | left | 5 |
+| * | arithmetic | binary | left | 6 |
+| / | arithmetic | binary | left | 6 |
+| - | negation | unary | right | 7 |
 
 
 ### Literals
@@ -58,33 +81,33 @@ Exit codes: 0 [when], 65 [when], 70 [when].
 
 | Kind | Syntax | Produces |
 |---|---|---|
-| [number] | [e.g. 42, 3.14] | [what runtime value] |
-| [string] | [e.g. "hello", escapes supported] | [what runtime value] |
-| [boolean] | [true, false] | [what runtime value] |
-| [nil] | [spelling] | [what runtime value] |
+| number | 42, 3.14, -1 | integer/float value |
+| string | "hello" | string value |
+| boolean | true, false | boolean value |
+| nil | NONE | null value |
 
 
 ### Identifiers
 
-- Start characters: [which]
-- Continue characters: [which]
-- Case-sensitive: [yes or no]
-- [Reserved patterns, length limits, or other restrictions.]
+- Start characters: letters (both capital and lowercase), underscores
+- Continue characters: letters, numbers, underscores
+- Case-sensitive: yes
+- Restrictions: matching keywords, starting with a number/symbol
 
 ### Comments
 
-- Line comments: [token]
-- Block comments: [tokens, or "not supported"]
-- Nesting: [supported or not]
+- Line comments: ^^
+- Block comments: ^^^ to open and close
+- Nesting: not supported
 - [Harness note: comment_prefix in tests/lab*/manifest.json is set to the
   token above.]
 
 ## Whitespace and termination
 
-- Whitespace significant: [yes or no, and where]
-- Statement terminator: [e.g. semicolon, newline, none]
-- Block delimiters: [e.g. braces, indentation]
-- Grouping delimiters: [e.g. parentheses]
+- Whitespace significant: no
+- Statement terminator: <>
+- Block delimiters: curly braces
+- Grouping delimiters: parentheses
 
 ## Token output format
 
@@ -120,9 +143,9 @@ language.]
 
 ### Value printing
 
-- Numbers: [e.g. 5 rather than 5.0]
-- Nil: [spelling]
-- Strings: [with or without quotes]
+- Numbers: Integers are printed as whole (ex. 5), float is printed as 5.0, and 
+- Nil: NONE
+- Strings: Strings are enclosed by double quotes.
 
 ### Truthiness
 
@@ -131,12 +154,12 @@ true.]
 
 ### Operator semantics
 
-- Arithmetic: [accepted operand types]
-- `+` on strings: [concatenation, error, or coercion]
+- Arithmetic: Addition [+], Subtraction [-], Division [/], Multiplication [*]
+- `+` on strings: Concatenation
 - Mixed types: [what happens]
 - Comparison: [accepted operand types]
-- Equality across types: [false, or an error]
-- Division by zero: [value produced, or runtime error]
+- Equality across types: False
+- Division by zero: Runtime error
 
 ### Scope and bindings
 
