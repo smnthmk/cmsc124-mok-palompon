@@ -1,0 +1,6 @@
+{
+  "ext": ".mp",
+  "flag": "--lex",
+  "mode": "sidecar",
+  "comment_prefix": "^^"
+}
