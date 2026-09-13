@@ -9,7 +9,7 @@ private fun fail(message: String): Nothing {
 }
 
 fun main(args: Array<String>) {
-    val path = args.firstOrNull() ?: fail("expected one source-file path")
+    /*val path = args.firstOrNull() ?: fail("expected one source-file path")
 
     val source = try {
         Files.readString(Path.of(path), StandardCharsets.UTF_8)
@@ -17,5 +17,12 @@ fun main(args: Array<String>) {
         fail("cannot read '$path': ${error.message}")
     }
 
-    print(source)
+    print(source)*/
+    val src = "while2 = limit<=25;"
+    val scanner = TokenScanner(src)
+    val tokens = scanner.scanTokens()
+
+    tokens.forEach{println(it)}
+    println("Symbol Table: ${scanner.symbolTable}")
 }
+
