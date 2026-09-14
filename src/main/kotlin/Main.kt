@@ -4,12 +4,14 @@ import java.nio.file.Path
 import kotlin.system.exitProcess
 
 private fun fail(message: String): Nothing {
-    System.err.println("lab0: $message")
+    System.err.println("lab1: $message")
     exitProcess(65)
 }
 
 fun main(args: Array<String>) {
-   /* val path = args.firstOrNull() ?: fail("expected one source-file path")
+    val lex = args.contains("--lex")
+    val path = args.firstOrNull() { !it.startsWith("-") }
+    ?: fail("expected one source-file path")
 
     val source = try {
         Files.readString(Path.of(path), StandardCharsets.UTF_8)
@@ -17,24 +19,19 @@ fun main(args: Array<String>) {
         fail("cannot read '$path': ${error.message}")
     }
 
-    print(source)
-    */
-
-    val src = "var limit = 10 * 5 / 2;\n" +
-            "if (limit <= 25)\n" +
-            "    print true;\n" +
-            "else\n" +
-            "    print nil;\n" +
-            "while (limit < 50)\n" +
-            "    limit = limit + 1 - 0;while2 = limit<=25;"
-
-    val scanner = TokenScanner(src)
+    val scanner = TokenScanner(source)
     val tokens = scanner.scanTokens()
 
-    tokens.forEach{println(it)}
-    if(scanner.errorOccured){
+    if (scanner.errorOccured) {
         exitProcess(65)
     }
-    println("Symbol Table: ${scanner.symbolTable}")
+
+    if (lex) {
+        val output = tokens
+            .filter { it.type != TokenType.EOF }
+            .joinToString(" ") { it.lexeme }
+            
+        println(output)
+    }
 }
 
