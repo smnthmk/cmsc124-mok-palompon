@@ -1,5 +1,7 @@
 data class Token(
     val type: TokenType,
     val lexeme: String,
-    val col: Int
+    val literal: Any?,
+    val col: Int,
+    val line: Int
 )

@@ -5,6 +5,18 @@ class TokenScanner(val input: String){
     val symbolTable = mutableMapOf<String, String>()
     var c: Char = ' '
     var symbolID = 1
+    var errorOccured = false
+
+    val keywords = mapOf(
+        "var" to TokenType.VAR,
+        "print" to TokenType.PRINT,
+        "if" to TokenType.IF,
+        "else" to TokenType.ELSE,
+        "while" to TokenType.WHILE,
+        "true" to TokenType.TRUE,
+        "false" to TokenType.FALSE,
+        "nil" to TokenType.NIL
+    )
 
 
     fun isAtEnd(): Boolean{
@@ -45,13 +57,15 @@ class TokenScanner(val input: String){
                     while(peek().isLetter() || peek().isDigit() || peek() == '_'){
                         lexemestr += advance()
                     }
-                    val type = if(lexemestr == "while") TokenType.WHILE else TokenType.IDENTIFIER
+                    //val type = if(lexemestr == "while") TokenType.WHILE else TokenType.IDENTIFIER
+
+                    val type = keywords[lexemestr]?:TokenType.IDENTIFIER
 
                     if(type == TokenType.IDENTIFIER && !symbolTable.containsKey(lexemestr)){
                         symbolTable[lexemestr] = "S${symbolID++}"
                     }
 
-                    tokens.add(Token(type, lexemestr, col-1))
+                    tokens.add(Token(type, lexemestr,null, startCol, line))
                 }
 
                 c.isDigit() ->{
@@ -60,27 +74,35 @@ class TokenScanner(val input: String){
                     while(peek().isDigit()){
                         lexemestr += advance()
                     }
-                    tokens.add(Token(TokenType.NUMBER, lexemestr, col-1))
+                    tokens.add(Token(TokenType.NUMBER, lexemestr,lexemestr.toDouble(), startCol, line))
                 }
 
                 c == '<' ->{
                     if(peek() == '='){
                         advance()
-                        tokens.add(Token(TokenType.LESS_EQUAL, "<=", col-1))
+                        tokens.add(Token(TokenType.LESS_EQUAL, "<=", null, startCol, line))
                     }else{
-                        tokens.add(Token(TokenType.LESS, "<", col-1))
+                        tokens.add(Token(TokenType.LESS, "<", null, startCol, line))
                     }
                 }
 
-                c == '=' -> tokens.add(Token(TokenType.EQUAL, "=", col-1))
-                c == ';' -> tokens.add(Token(TokenType.SEMICOLON, ";", col - 1))
-                c == '(' -> tokens.add(Token(TokenType.LEFT_PAREN, "(", col - 1))
-                c == ')' -> tokens.add(Token(TokenType.RIGHT_PAREN, ")", col - 1))
+                c == '=' -> tokens.add(Token(TokenType.EQUAL, "=",null, startCol, line))
+                c == ';' -> tokens.add(Token(TokenType.SEMICOLON, ";",null, startCol, line))
+                c == '(' -> tokens.add(Token(TokenType.LEFT_PAREN, "(",null, startCol, line))
+                c == ')' -> tokens.add(Token(TokenType.RIGHT_PAREN, ")", null, startCol, line))
+                c == '+' -> tokens.add(Token(TokenType.PLUS, "+", null, startCol, line))
+                c == '-' -> tokens.add(Token(TokenType.MINUS, "-", null, startCol, line))
+                c == '*' -> tokens.add(Token(TokenType.STAR, "*", null, startCol, line))
+                c == '/' -> tokens.add(Token(TokenType.SLASH, "/", null, startCol, line))
 
+                else -> {
+                    System.err.println("Invalid Char: $c at line: $line")
+                    errorOccured = true
+                }
             }
         }
 
-        tokens.add(Token(TokenType.EOF, "empty", col))
+        tokens.add(Token(TokenType.EOF, "empty", null, col, line))
         return tokens
 
     }
