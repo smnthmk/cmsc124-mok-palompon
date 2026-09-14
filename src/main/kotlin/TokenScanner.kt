@@ -86,7 +86,50 @@ class TokenScanner(val input: String){
                     }
                 }
 
-                c == '=' -> tokens.add(Token(TokenType.EQUAL, "=",null, startCol, line))
+                //equals and bangs
+                c == '=' ->{
+                    if(peek() == '='){
+                        advance()
+                        tokens.add(Token(TokenType.EQUAL_EQUAL, "==", null, startCol, line))
+                    }else{
+                        tokens.add(Token(TokenType.EQUAL, "=", null, startCol, line))
+                    }
+                }
+
+                c == '!' ->{
+                    if(peek() == '='){
+                        advance()
+                        tokens.add(Token(TokenType.BANG_EQUAL, "!=", null, startCol, line))
+                    }else{
+                        tokens.add(Token(TokenType.BANG, "!", null, startCol, line))
+                    }
+                }
+
+                // string handling
+                c == '"' -> {
+                    val startLine = line
+                    var lexemestr = ""
+                    while (peek() != '"' && !isAtEnd()) {
+                        if (peek() == '\n') {
+                            line++
+                        }
+
+                        val ch = advance()
+                        lexemestr += ch
+                        if (ch == '\n') {  
+                            col = 1
+                        }
+                    }
+
+                    if (isAtEnd()) {
+                        System.err.println("Unterminated string at line: $startLine")
+                        errorOccured = true
+                    } else {
+                        advance() 
+                        tokens.add(Token(TokenType.STRING, "\"$lexemestr\"", lexemestr, startCol, startLine))
+                    }
+                }
+
                 c == ';' -> tokens.add(Token(TokenType.SEMICOLON, ";",null, startCol, line))
                 c == '(' -> tokens.add(Token(TokenType.LEFT_PAREN, "(",null, startCol, line))
                 c == ')' -> tokens.add(Token(TokenType.RIGHT_PAREN, ")", null, startCol, line))
@@ -94,6 +137,8 @@ class TokenScanner(val input: String){
                 c == '-' -> tokens.add(Token(TokenType.MINUS, "-", null, startCol, line))
                 c == '*' -> tokens.add(Token(TokenType.STAR, "*", null, startCol, line))
                 c == '/' -> tokens.add(Token(TokenType.SLASH, "/", null, startCol, line))
+                c == '{' -> tokens.add(Token(TokenType.LEFT_BRACE, "{", null, startCol, line))
+                c == '}' -> tokens.add(Token(TokenType.RIGHT_BRACE, "}", null, startCol, line))
 
                 else -> {
                     System.err.println("Invalid Char: $c at line: $line")
