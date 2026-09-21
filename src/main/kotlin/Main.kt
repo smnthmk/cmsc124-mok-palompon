@@ -23,6 +23,20 @@ fun main(args: Array<String>) {
     val tokens = scanner.scanTokens()
 
     if (scanner.errorOccured) {
+        val errorOutput = tokens.filter {it.type != TokenType.EOF}
+
+        System.err.println("XXXXXX ERR TOKEN DUMP XXXXXX")
+
+        errorOutput.forEach{
+                errorToken ->
+            when(errorToken.type){
+                TokenType.ERROR -> System.err.println(errorToken.lexeme)
+                else -> System.err.println(errorToken)
+            }
+        }
+
+        System.err.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
         exitProcess(65)
     }
 

@@ -85,6 +85,17 @@ class TokenScanner(val input: String){
                         tokens.add(Token(TokenType.LESS, "<", null, startCol, line))
                     }
                 }
+                c == '>' ->{
+                    if(peek() == '='){
+                        advance()
+                        tokens.add(Token(TokenType.GREATER_EQUAL, ">=", null, startCol, line))
+                    }else if(peek() == '>'){
+                        advance()
+                        tokens.add(Token(TokenType.PRINT, ">>", null, startCol, line))
+                    }else{
+                        tokens.add(Token(TokenType.GREATER, "<", null, startCol, line))
+                    }
+                }
 
                 //equals and bangs
                 c == '=' ->{
@@ -122,7 +133,8 @@ class TokenScanner(val input: String){
                     }
 
                     if (isAtEnd()) {
-                        System.err.println("Unterminated string at line: $startLine")
+                        //System.err.println("Unterminated string at line: $startLine")
+                        tokens.add(Token(TokenType.ERROR, "Unterminated string at line: $startLine", null, startCol, startLine))
                         errorOccured = true
                     } else {
                         advance() 
@@ -139,9 +151,10 @@ class TokenScanner(val input: String){
                 c == '/' -> tokens.add(Token(TokenType.SLASH, "/", null, startCol, line))
                 c == '{' -> tokens.add(Token(TokenType.LEFT_BRACE, "{", null, startCol, line))
                 c == '}' -> tokens.add(Token(TokenType.RIGHT_BRACE, "}", null, startCol, line))
-
+                c == '?' -> tokens.add(Token(TokenType.QUESTION, "?", null, startCol, line))
                 else -> {
-                    System.err.println("Invalid Char: $c at line: $line")
+                    //System.err.println("Invalid Char: $c at line: $line")
+                    tokens.add(Token(TokenType.ERROR, "Invalid Char: $c at line: $line", null, startCol, line))
                     errorOccured = true
                 }
             }
