@@ -1,4 +1,4 @@
-class TokenScanner(val input: String){
+class TokenScanner(val input: String) {
     var current = 0
     var col = 1
     var line = 1
@@ -18,105 +18,104 @@ class TokenScanner(val input: String){
         "nil" to TokenType.NIL
     )
 
-
-    fun isAtEnd(): Boolean{
+    fun isAtEnd(): Boolean {
         return current >= input.length
     }
 
-    fun peek(): Char{
-        return if(!isAtEnd()){
+    fun peek(): Char {
+        return if (!isAtEnd()) {
             input[current]
-        }else{
+        } else {
             '\u0000'
         }
     }
 
-    fun advance(): Char{
+    fun advance(): Char {
         c = input[current++]
         col++
         return c
     }
-    fun scanTokens(): List<Token>{
+
+    fun scanTokens(): List<Token> {
         val tokens = mutableListOf<Token>()
 
-        while(!isAtEnd()){
+        while (!isAtEnd()) {
             var startCol = col
             val c = advance()
 
             when {
-                c.isWhitespace()->{
-                    if(c=='\n'){
+                c.isWhitespace() -> {
+                    if (c == '\n') {
                         line++
                         col = 1
                     }
                 }
-                c.isLetter() || c=='_' ->{
+
+                c.isLetter() || c == '_' -> {
                     var lexemestr = ""
                     lexemestr += c
 
-                    while(peek().isLetter() || peek().isDigit() || peek() == '_'){
+                    while (peek().isLetter() || peek().isDigit() || peek() == '_') {
                         lexemestr += advance()
                     }
-                    //val type = if(lexemestr == "while") TokenType.WHILE else TokenType.IDENTIFIER
 
-                    val type = keywords[lexemestr]?:TokenType.IDENTIFIER
+                    val type = keywords[lexemestr] ?: TokenType.IDENTIFIER
 
-                    if(type == TokenType.IDENTIFIER && !symbolTable.containsKey(lexemestr)){
+                    if (type == TokenType.IDENTIFIER && !symbolTable.containsKey(lexemestr)) {
                         symbolTable[lexemestr] = "S${symbolID++}"
                     }
 
-                    tokens.add(Token(type, lexemestr,null, startCol, line))
+                    tokens.add(Token(type, lexemestr, null, startCol, line))
                 }
 
-                c.isDigit() ->{
+                c.isDigit() -> {
                     var lexemestr = ""
                     lexemestr += c
-                    while(peek().isDigit()){
+                    while (peek().isDigit()) {
                         lexemestr += advance()
                     }
-                    tokens.add(Token(TokenType.NUMBER, lexemestr,lexemestr.toDouble(), startCol, line))
+                    tokens.add(Token(TokenType.NUMBER, lexemestr, lexemestr.toDouble(), startCol, line))
                 }
 
-                c == '<' ->{
-                    if(peek() == '='){
+                c == '<' -> {
+                    if (peek() == '=') {
                         advance()
                         tokens.add(Token(TokenType.LESS_EQUAL, "<=", null, startCol, line))
-                    }else{
+                    } else {
                         tokens.add(Token(TokenType.LESS, "<", null, startCol, line))
                     }
                 }
-                c == '>' ->{
-                    if(peek() == '='){
+
+                c == '>' -> {
+                    if (peek() == '=') {
                         advance()
                         tokens.add(Token(TokenType.GREATER_EQUAL, ">=", null, startCol, line))
-                    }else if(peek() == '>'){
+                    } else if (peek() == '>') {
                         advance()
                         tokens.add(Token(TokenType.PRINT, ">>", null, startCol, line))
-                    }else{
-                        tokens.add(Token(TokenType.GREATER, "<", null, startCol, line))
+                    } else {
+                        tokens.add(Token(TokenType.GREATER, ">", null, startCol, line))
                     }
                 }
 
-                //equals and bangs
-                c == '=' ->{
-                    if(peek() == '='){
+                c == '=' -> {
+                    if (peek() == '=') {
                         advance()
                         tokens.add(Token(TokenType.EQUAL_EQUAL, "==", null, startCol, line))
-                    }else{
+                    } else {
                         tokens.add(Token(TokenType.EQUAL, "=", null, startCol, line))
                     }
                 }
 
-                c == '!' ->{
-                    if(peek() == '='){
+                c == '!' -> {
+                    if (peek() == '=') {
                         advance()
                         tokens.add(Token(TokenType.BANG_EQUAL, "!=", null, startCol, line))
-                    }else{
+                    } else {
                         tokens.add(Token(TokenType.BANG, "!", null, startCol, line))
                     }
                 }
 
-                // string handling
                 c == '"' -> {
                     val startLine = line
                     var lexemestr = ""
@@ -127,34 +126,42 @@ class TokenScanner(val input: String){
 
                         val ch = advance()
                         lexemestr += ch
-                        if (ch == '\n') {  
+                        if (ch == '\n') {
                             col = 1
                         }
                     }
 
                     if (isAtEnd()) {
-                        //System.err.println("Unterminated string at line: $startLine")
-                        tokens.add(Token(TokenType.ERROR, "Unterminated string at line: $startLine", null, startCol, startLine))
+                        System.err.println("Unterminated string at line: $startLine")
                         errorOccured = true
                     } else {
-                        advance() 
+                        advance()
                         tokens.add(Token(TokenType.STRING, "\"$lexemestr\"", lexemestr, startCol, startLine))
                     }
                 }
 
-                c == ';' -> tokens.add(Token(TokenType.SEMICOLON, ";",null, startCol, line))
-                c == '(' -> tokens.add(Token(TokenType.LEFT_PAREN, "(",null, startCol, line))
+                c == '/' -> {
+                    if (peek() == '/') {
+                        while (peek() != '\n' && !isAtEnd()) {
+                            advance()
+                        }
+                    } else {
+                        tokens.add(Token(TokenType.SLASH, "/", null, startCol, line))
+                    }
+                }
+
+                c == ';' -> tokens.add(Token(TokenType.SEMICOLON, ";", null, startCol, line))
+                c == '(' -> tokens.add(Token(TokenType.LEFT_PAREN, "(", null, startCol, line))
                 c == ')' -> tokens.add(Token(TokenType.RIGHT_PAREN, ")", null, startCol, line))
                 c == '+' -> tokens.add(Token(TokenType.PLUS, "+", null, startCol, line))
                 c == '-' -> tokens.add(Token(TokenType.MINUS, "-", null, startCol, line))
                 c == '*' -> tokens.add(Token(TokenType.STAR, "*", null, startCol, line))
-                c == '/' -> tokens.add(Token(TokenType.SLASH, "/", null, startCol, line))
                 c == '{' -> tokens.add(Token(TokenType.LEFT_BRACE, "{", null, startCol, line))
                 c == '}' -> tokens.add(Token(TokenType.RIGHT_BRACE, "}", null, startCol, line))
                 c == '?' -> tokens.add(Token(TokenType.QUESTION, "?", null, startCol, line))
+
                 else -> {
-                    //System.err.println("Invalid Char: $c at line: $line")
-                    tokens.add(Token(TokenType.ERROR, "Invalid Char: $c at line: $line", null, startCol, line))
+                    System.err.println("Invalid Char: $c at line: $line")
                     errorOccured = true
                 }
             }
@@ -162,6 +169,5 @@ class TokenScanner(val input: String){
 
         tokens.add(Token(TokenType.EOF, "empty", null, col, line))
         return tokens
-
     }
 }

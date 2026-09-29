@@ -10,8 +10,8 @@ private fun fail(message: String): Nothing {
 
 fun main(args: Array<String>) {
     val lex = args.contains("--lex")
-    val path = args.firstOrNull() { !it.startsWith("-") }
-    ?: fail("expected one source-file path")
+    val path = args.firstOrNull { !it.startsWith("-") }
+        ?: fail("expected one source-file path")
 
     val source = try {
         Files.readString(Path.of(path), StandardCharsets.UTF_8)
@@ -23,14 +23,13 @@ fun main(args: Array<String>) {
     val tokens = scanner.scanTokens()
 
     if (scanner.errorOccured) {
-        val errorOutput = tokens.filter {it.type != TokenType.EOF}
+        val errorOutput = tokens.filter { it.type != TokenType.EOF }
 
-        System.err.println("XXXXXX ERR TOKEN DUMP XXXXXX")
+        System.err.println("Invalid ")
 
-        errorOutput.forEach{
-                errorToken ->
-            when(errorToken.type){
-                TokenType.ERROR -> System.err.println(errorToken.lexeme)
+        errorOutput.forEach { errorToken ->
+            when(errorToken.type) {
+                // TokenType.ERROR -> System.err.println(errorToken.lexeme) 
                 else -> System.err.println(errorToken)
             }
         }
@@ -41,11 +40,7 @@ fun main(args: Array<String>) {
     }
 
     if (lex) {
-        val output = tokens
-            .filter { it.type != TokenType.EOF }
-            .joinToString(" ") { it.lexeme }
-            
-        println(output)
+        for (token in tokens) {
+            println("Token(type=${token.type}, lexeme=${token.lexeme}, literal=${token.literal}, line=${token.line})")}
     }
 }
-
