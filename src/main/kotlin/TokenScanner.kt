@@ -150,6 +150,18 @@ class TokenScanner(val input: String) {
                     }
                 }
 
+                c == '^' -> {
+                    if (peek() == '^') {
+                        advance()
+                        while (peek() != '\n' && !isAtEnd()) {
+                            advance()
+                        }
+                    } else {
+                        System.err.println("Invalid Char: $c at line: $line")
+                        errorOccured = true
+                    }
+                }
+
                 c == ';' -> tokens.add(Token(TokenType.SEMICOLON, ";", null, startCol, line))
                 c == '(' -> tokens.add(Token(TokenType.LEFT_PAREN, "(", null, startCol, line))
                 c == ')' -> tokens.add(Token(TokenType.RIGHT_PAREN, ")", null, startCol, line))
