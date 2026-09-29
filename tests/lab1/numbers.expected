@@ -1,1 +1,5 @@
-10 25 0 12345
+Token(type=NUMBER, lexeme=10, literal=10.0, line=1)
+Token(type=NUMBER, lexeme=25, literal=25.0, line=1)
+Token(type=NUMBER, lexeme=0, literal=0.0, line=1)
+Token(type=NUMBER, lexeme=12345, literal=12345.0, line=1)
+Token(type=EOF, lexeme=empty, literal=null, line=1)
